@@ -12,11 +12,12 @@ export default function HomeScreen() {
   return (
     <>
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#9D4EDD', dark: '#202020' }}
+        headerBackgroundColor={{ light: '#000', dark: '#000' }}
         headerImage={
           <Image
-            source={require('@/assets/images/reown-header.png')}
-            style={styles.reownLogo}
+            source={require('@/assets/images/monadero_image.png')}
+            style={{ height: 250, width: '100%' }}
+            contentFit="contain"
           />
         }
       >
@@ -36,14 +37,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: 5
   },
   reownLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+    height: 200,
+    width: 400,
+    alignContent: 'center',
+    alignSelf: 'center',
+    // bottom: 0,
+    // left: 0,
+    // position: 'absolute',
   },
   appKitButton: {
     marginTop: 20,

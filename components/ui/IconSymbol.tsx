@@ -18,7 +18,8 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-  'banknote': 'attach-money'
+  'banknote': 'attach-money',
+  'tray.and.arrow.down.fill': 'download',
 } as IconMapping;
 
 /**

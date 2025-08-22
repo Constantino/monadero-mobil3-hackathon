@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -20,10 +20,21 @@ export default function TabTwoScreen() {
           style={styles.headerImage}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recibe y envia fondos en un mismo lugar</ThemedText>
-      </ThemedView>
-      <ThemedText>Discover the powerful features of AppKit for React Native development.</ThemedText>
+
+      <View style={styles.buttonRow}>
+        <Pressable style={styles.button} onPress={() => alert('Enviar fondos')}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <IconSymbol name="paperplane.fill" size={20} color="#fff" />
+            <ThemedText style={styles.buttonText}>Enviar</ThemedText>
+          </View>
+        </Pressable>
+        <Pressable style={styles.button} onPress={() => alert('Recibir fondos')}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <IconSymbol name="tray.and.arrow.down.fill" size={20} color="#fff" />
+            <ThemedText style={styles.buttonText}>Recibir</ThemedText>
+          </View>
+        </Pressable>
+      </View>
 
     </ParallaxScrollView>
   );
@@ -39,5 +50,21 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+  },
+  buttonRow: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 16,
+    marginTop: 24,
+  },
+  button: {
+    backgroundColor: '#9D4EDD',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
