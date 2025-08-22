@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -9,6 +10,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function TabTwoScreen() {
+  const router = useRouter();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#9D4EDD', dark: '#353636' }}
@@ -22,13 +25,13 @@ export default function TabTwoScreen() {
       }>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.button} onPress={() => alert('Enviar fondos')}>
+        <Pressable style={styles.button} onPress={() => router.push('/send-funds')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <IconSymbol name="paperplane.fill" size={20} color="#fff" />
             <ThemedText style={styles.buttonText}>Enviar</ThemedText>
           </View>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => alert('Recibir fondos')}>
+        <Pressable style={styles.button} onPress={() => router.push('/receive-funds')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <IconSymbol name="tray.and.arrow.down.fill" size={20} color="#fff" />
             <ThemedText style={styles.buttonText}>Recibir</ThemedText>
