@@ -67,8 +67,8 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="send-funds" options={{ title: "Enviar fondos" }} />
-            <Stack.Screen name="receive-funds" options={{ title: "Recibir fondos" }} />
+            <Stack.Screen name="send-funds" options={{ title: "Pagar" }} />
+            <Stack.Screen name="receive-funds" options={{ title: "Cobrar" }} />
             <Stack.Screen name="+not-found" />
           </Stack>
           {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}

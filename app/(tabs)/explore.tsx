@@ -20,13 +20,13 @@ export default function TabTwoScreen() {
         <Pressable style={styles.button} onPress={() => router.push('/send-funds')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <IconSymbol name="paperplane.fill" size={120} color="#fff" />
-            <ThemedText style={styles.buttonText}>Enviar</ThemedText>
+            <ThemedText style={styles.buttonText}>Pagar</ThemedText>
           </View>
         </Pressable>
         <Pressable style={styles.button} onPress={() => router.push('/receive-funds')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <IconSymbol name="tray.and.arrow.down.fill" size={120} color="#fff" />
-            <ThemedText style={styles.buttonText}>Recibir</ThemedText>
+            <ThemedText style={styles.buttonText}>Cobrar</ThemedText>
           </View>
         </Pressable>
       </View>
