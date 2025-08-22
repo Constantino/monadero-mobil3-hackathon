@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 export default function ReceiveFundsScreen() {
     return (
         <ThemedView style={styles.container}>
-            <ThemedText style={styles.title}>ReceiveFunds</ThemedText>
+            <ThemedText style={styles.title}>Recibir fondos</ThemedText>
         </ThemedView>
     );
 }

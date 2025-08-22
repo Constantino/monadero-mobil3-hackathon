@@ -22,10 +22,10 @@ export default function HomeScreen() {
         }
       >
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Pagos instantaneos</ThemedText>
+          <ThemedText type="title">¡Bienvenido!</ThemedText>
           {/* <HelloWave /> */}
         </ThemedView>
-        <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
+        <AppKitButton connectStyle={styles.appKitButton} label='Iniciar sesión' />
       </ParallaxScrollView>
 
     </>

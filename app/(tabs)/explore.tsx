@@ -13,33 +13,25 @@ export default function TabTwoScreen() {
   const router = useRouter();
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#9D4EDD', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#fff"
-          name="banknote"
-          style={styles.headerImage}
-        />
-      }>
+    <View style={styles.container}>
+      <ThemedText style={styles.title}>Terminal de transferencias</ThemedText>
 
       <View style={styles.buttonRow}>
         <Pressable style={styles.button} onPress={() => router.push('/send-funds')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <IconSymbol name="paperplane.fill" size={20} color="#fff" />
+            <IconSymbol name="paperplane.fill" size={120} color="#fff" />
             <ThemedText style={styles.buttonText}>Enviar</ThemedText>
           </View>
         </Pressable>
         <Pressable style={styles.button} onPress={() => router.push('/receive-funds')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <IconSymbol name="tray.and.arrow.down.fill" size={20} color="#fff" />
+            <IconSymbol name="tray.and.arrow.down.fill" size={120} color="#fff" />
             <ThemedText style={styles.buttonText}>Recibir</ThemedText>
           </View>
         </Pressable>
       </View>
 
-    </ParallaxScrollView>
+    </View>
   );
 }
 
@@ -69,5 +61,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 25,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 32,
   },
 });
