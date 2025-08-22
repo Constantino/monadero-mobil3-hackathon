@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import QRCode from 'react-native-qrcode-svg';
 
 export default function ReceiveFundsScreen() {
     const [amount, setAmount] = useState('');
     const [billAccount, setBillAccount] = useState('');
+    const [showQR, setShowQR] = useState(false);
+    const [qrData, setQrData] = useState('');
 
     const formatAmount = (text: string) => {
         // Remove all non-numeric characters except decimal point
@@ -25,6 +28,23 @@ export default function ReceiveFundsScreen() {
     const handleAmountChange = (text: string) => {
         const formatted = formatAmount(text);
         setAmount(formatted);
+    };
+
+    const handleGenerateQR = () => {
+        if (!amount || !billAccount) {
+            alert('Por favor complete todos los campos');
+            return;
+        }
+
+        const paymentData = {
+            address: '0x0001',
+            amount: amount,
+            billAccount: billAccount,
+            merchant: 'Tacos Don Chuy'
+        };
+
+        setQrData(JSON.stringify(paymentData));
+        setShowQR(true);
     };
 
     return (
@@ -61,7 +81,19 @@ export default function ReceiveFundsScreen() {
                 />
             </View>
 
-            <Pressable style={styles.button} onPress={() => alert('Generando cobro...')}>
+            {showQR && (
+                <View style={styles.qrContainer}>
+                    <QRCode
+                        value={qrData}
+                        size={200}
+                        color="black"
+                        backgroundColor="white"
+                    />
+                    <ThemedText style={styles.qrText}>Escanea para pagar</ThemedText>
+                </View>
+            )}
+
+            <Pressable style={styles.button} onPress={handleGenerateQR}>
                 <ThemedText style={styles.buttonText}>Generar cobro</ThemedText>
             </Pressable>
         </ThemedView>
@@ -122,5 +154,14 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    qrContainer: {
+        marginBottom: 24,
+        alignItems: 'center',
+    },
+    qrText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#555',
     },
 });
