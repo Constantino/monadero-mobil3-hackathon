@@ -12,17 +12,18 @@ export default function HomeScreen() {
   return (
     <>
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#202020', dark: '#202020' }}
+        headerBackgroundColor={{ light: '#5411b0ff', dark: '#202020' }}
         headerImage={
           <Image
             source={require('@/assets/images/reown-header.png')}
             style={styles.reownLogo}
           />
-        }>
+        }
+      >
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">AppKit</ThemedText>
-          <ThemedText type="subtitle">for React Native</ThemedText>
-          <HelloWave />
+          <ThemedText type="title">¡Bienvenido a Monadero!</ThemedText>
+          {/* <ThemedText type="subtitle">for React Native</ThemedText> */}
+          {/* <HelloWave /> */}
         </ThemedView>
         <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
       </ParallaxScrollView>
