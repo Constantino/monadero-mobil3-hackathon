@@ -67,6 +67,16 @@ export default function HomeScreen() {
     return result;
   };
 
+  // Function to format saldo value in US dollar format
+  const formatSaldo = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
   const handleRecargarSaldo = () => {
     setIsRecargarModalVisible(true);
   };
@@ -118,7 +128,7 @@ export default function HomeScreen() {
         />
 
         <ThemedText type="title">Cripto: {formatBalance(balance?.value || 0)} MON</ThemedText>
-        <ThemedText type="title">Saldo: ${saldo.toFixed(2)}</ThemedText>
+        <ThemedText type="title">Saldo: {formatSaldo(saldo)}</ThemedText>
 
         <Pressable
           style={styles.button}
