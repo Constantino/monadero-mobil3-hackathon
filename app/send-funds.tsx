@@ -115,7 +115,17 @@ export default function SendFundsScreen() {
                     <Pressable style={[styles.button, { backgroundColor: '#27ae60' }]} onPress={() => {
                         try {
                             const parsedData = JSON.parse(scannedData);
-                            Alert.alert('Pago Autorizado', `Pago de ${parsedData.amount} a ${parsedData.merchant} ha sido autorizado.`);
+
+                            // Calculate tip amount and total
+                            const baseAmount = parseFloat(parsedData.amount.replace(/[^0-9.]/g, '')) || 0;
+                            const tipPercent = tipPercentage === 'custom' ? parseFloat(customTip) : parseFloat(tipPercentage);
+                            const tipAmount = (baseAmount * tipPercent) / 100;
+                            const totalAmount = baseAmount + tipAmount;
+
+                            Alert.alert(
+                                'Pago Autorizado',
+                                `Pago de $${baseAmount.toFixed(2)} a ${parsedData.merchant} ha sido autorizado.\n\nPropina (${tipPercent}%): $${tipAmount.toFixed(2)}\nTotal: $${totalAmount.toFixed(2)}`
+                            );
                         } catch (error) {
                             Alert.alert('Error', 'No se pudo procesar el pago.');
                         }
