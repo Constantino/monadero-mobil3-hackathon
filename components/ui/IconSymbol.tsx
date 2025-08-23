@@ -25,6 +25,10 @@ const MAPPING = {
   'dollarsign.circle.fill': 'account-balance-wallet',
   'savings.fill': 'account-balance',
   'money.fill': 'monetization-on',
+  'arrow.up.circle.fill': 'keyboard-arrow-up',
+  'arrow.down.circle.fill': 'keyboard-arrow-down',
+  'map.fill': 'map',
+  'location.fill': 'location-on',
 } as const;
 
 /**

@@ -69,6 +69,13 @@ export default function HomeScreen() {
           <MaterialIcons name="attach-money" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>Recargar saldo</ThemedText>
         </Pressable>
+        <Pressable
+          style={styles.button}
+          onPress={() => alert('hola')}
+        >
+          <IconSymbol name="map.fill" size={24} color="#fff" />
+          <ThemedText style={styles.buttonText}>Mapa</ThemedText>
+        </Pressable>
       </ParallaxScrollView>
 
       {/* Modal for code input */}
@@ -139,7 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 20,
     marginTop: 16,
-    height: 100,
+    height: 80,
     width: '100%',
     textAlign: 'center',
     alignSelf: 'center',
@@ -151,7 +158,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: 20,
     textAlign: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
