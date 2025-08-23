@@ -14,9 +14,10 @@ export default function SendFundsScreen() {
 
     const handleBarcodeScanned = ({ data }: { data: string }) => {
         if (scanned) return;
+
+        // Prevent multiple scans by immediately setting scanned to true
         setScanned(true);
         setScannedData(data);
-        Alert.alert('QR Code Escaneado', `Datos: ${data}`);
     };
 
     if (!permission) {
@@ -50,7 +51,7 @@ export default function SendFundsScreen() {
                             style={styles.camera}
                             facing="back"
                             barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-                            onBarcodeScanned={handleBarcodeScanned}
+                            onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
                         >
                             <View style={styles.overlay}>
                                 <View style={styles.scanFrame} />
@@ -113,7 +114,7 @@ export default function SendFundsScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, paddingTop: 60 },
-    title: { fontSize: 34, fontWeight: 'bold', marginBottom: 30 },
+    title: { fontSize: 34, fontWeight: 'bold', marginBottom: 30, lineHeight: 40 },
     permissionText: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 20 },
     scannerContainer: { width: '100%', height: 450, borderRadius: 12, overflow: 'hidden', marginBottom: 20 },
     camera: { flex: 1 },
