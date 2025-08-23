@@ -3,6 +3,7 @@ import { View, StyleSheet, TextInput, Pressable } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import QRCode from 'react-native-qrcode-svg';
+import { router } from 'expo-router';
 
 export default function ReceiveFundsScreen() {
     const [amount, setAmount] = useState('');
@@ -96,6 +97,16 @@ export default function ReceiveFundsScreen() {
             <Pressable style={styles.button} onPress={handleGenerateQR}>
                 <ThemedText style={styles.buttonText}>Generar cobro</ThemedText>
             </Pressable>
+
+            <Pressable
+                style={styles.nextButton}
+                onPress={() => {
+                    console.log('Next button pressed');
+                    router.push('./payment-receiver-confirmation');
+                }}
+            >
+                <ThemedText style={styles.nextButtonText}>Next</ThemedText>
+            </Pressable>
         </ThemedView>
     );
 }
@@ -163,5 +174,35 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 16,
         color: '#555',
+    },
+    nextButton: {
+        backgroundColor: '#9D4EDD',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        marginTop: 16,
+        height: 50,
+        width: 70,
+        textAlign: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    nextButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 12,
+        textAlign: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    debugText: {
+        color: '#ff0000',
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginVertical: 10,
+        backgroundColor: '#ffff00',
+        padding: 5,
     },
 });
