@@ -1,8 +1,9 @@
-import { AppKitButton } from '@reown/appkit-wagmi-react-native';
+import { AppKitButton, useWalletInfo } from '@reown/appkit-wagmi-react-native';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Modal, TextInput, View, Alert, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useAccount, useBalance } from "wagmi";
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -15,6 +16,52 @@ export default function HomeScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [inputCode, setInputCode] = useState('');
   const [saldo, setSaldo] = useState(1000);
+  const { walletInfo } = useWalletInfo();
+  const { address, status } = useAccount();
+  const { data: balance } = useBalance({
+    address: address,
+    chainId: 10143,
+  });
+
+  // Function to format balance from 18 decimal places
+  const formatBalance = (balanceValue: string | number | bigint) => {
+    if (!balanceValue) return '0';
+
+    // Convert to string
+    const balanceStr = balanceValue.toString();
+
+    console.log('Original balance value:', balanceValue);
+    console.log('Balance as string:', balanceStr);
+    console.log('String length:', balanceStr.length);
+
+    // If the string length is less than 18, it's already a small number
+    if (balanceStr.length < 18) {
+      const result = parseFloat(balanceStr).toFixed(6);
+      console.log('Small number result:', result);
+      return result;
+    }
+
+    // For numbers with 18+ digits, insert decimal point 18 positions from the right
+    const length = balanceStr.length;
+    const integerPart = balanceStr.substring(0, length - 18);
+    const decimalPart = balanceStr.substring(length - 18);
+
+    console.log('Integer part:', integerPart);
+    console.log('Decimal part:', decimalPart);
+
+    // If integer part is empty, it means the number is less than 1
+    if (!integerPart) {
+      const result = `0.${decimalPart.substring(0, 2)}`;
+      console.log('Less than 1 result:', result);
+      return result;
+    }
+
+    // Combine with decimal point and limit to 6 decimal places
+    const result = `${integerPart}.${decimalPart.substring(0, 2)}`;
+    console.log('Final result:', result);
+
+    return result;
+  };
 
   const handleRecargarSaldo = () => {
     setIsModalVisible(true);
@@ -45,7 +92,7 @@ export default function HomeScreen() {
         headerImage={
           <Image
             source={require('@/assets/images/monadero_image.png')}
-            style={{ height: 250, width: '100%' }}
+            style={{ height: 220, width: '100%' }}
             contentFit="contain"
           />
         }
@@ -56,6 +103,8 @@ export default function HomeScreen() {
           size='md'
           loadingLabel='Conectando...'
         />
+
+        <ThemedText type="title">Cripto: {formatBalance(balance?.value || 0)} MON</ThemedText>
         <ThemedText type="title">Saldo: ${saldo.toFixed(2)}</ThemedText>
 
         <Pressable
@@ -63,7 +112,14 @@ export default function HomeScreen() {
           onPress={handleRecargarSaldo}
         >
           <MaterialIcons name="attach-money" size={24} color="#fff" />
-          <ThemedText style={styles.buttonText}>Recargar saldo</ThemedText>
+          <ThemedText style={styles.buttonText}>Recargar Saldo</ThemedText>
+        </Pressable>
+        <Pressable
+          style={styles.button}
+          onPress={handleRecargarSaldo}
+        >
+          <MaterialIcons name="swap-horiz" size={24} color="#fff" />
+          <ThemedText style={styles.buttonText}>Canjear Tarjeta de Regalo</ThemedText>
         </Pressable>
         <Pressable
           style={styles.button}
@@ -119,7 +175,7 @@ const styles = StyleSheet.create({
     gap: 5
   },
   reownLogo: {
-    height: 200,
+    height: 100,
     width: 400,
     alignContent: 'center',
     alignSelf: 'center',
