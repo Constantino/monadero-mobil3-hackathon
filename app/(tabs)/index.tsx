@@ -50,10 +50,7 @@ export default function HomeScreen() {
           />
         }
       >
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">¡Bienvenido!</ThemedText>
-          {/* <HelloWave /> */}
-        </ThemedView>
+
         <AppKitButton
           connectStyle={styles.appKitButton}
           label='Iniciar sesión con billetera'
@@ -74,7 +71,7 @@ export default function HomeScreen() {
           onPress={() => router.push('/map')}
         >
           <IconSymbol name="map.fill" size={24} color="#fff" />
-          <ThemedText style={styles.buttonText}>Mapa</ThemedText>
+          <ThemedText style={styles.buttonText}>Negocios en la red</ThemedText>
         </Pressable>
       </ParallaxScrollView>
 
