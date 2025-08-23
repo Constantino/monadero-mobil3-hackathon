@@ -17,7 +17,7 @@ export default function TabTwoScreen() {
       <ThemedText style={styles.title}>Terminal de transferencias</ThemedText>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.button} onPress={() => router.push('/send-funds')}>
+        <Pressable style={styles.button} onPress={() => router.push('/send-funds' as any)}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <IconSymbol name="paperplane.fill" size={120} color="#fff" />
             <ThemedText style={styles.buttonText}>Pagar</ThemedText>

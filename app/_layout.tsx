@@ -65,7 +65,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
-          <Stack>
+          <Stack screenOptions={{ headerShown: true }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="send-funds" options={{ title: "Pagar" }} />
             <Stack.Screen name="receive-funds" options={{ title: "Cobrar" }} />
