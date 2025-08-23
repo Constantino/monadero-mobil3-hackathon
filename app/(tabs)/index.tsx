@@ -71,7 +71,7 @@ export default function HomeScreen() {
         </Pressable>
         <Pressable
           style={styles.button}
-          onPress={() => alert('hola')}
+          onPress={() => router.push('/map')}
         >
           <IconSymbol name="map.fill" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>Mapa</ThemedText>

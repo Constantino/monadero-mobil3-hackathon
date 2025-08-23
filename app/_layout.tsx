@@ -69,6 +69,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="send-funds" options={{ title: "Pagar" }} />
             <Stack.Screen name="receive-funds" options={{ title: "Cobrar" }} />
+            <Stack.Screen name="map" options={{ title: "Mapa" }} />
             <Stack.Screen name="+not-found" />
           </Stack>
           {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
