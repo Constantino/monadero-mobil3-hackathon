@@ -50,7 +50,6 @@ export default function HomeScreen() {
           />
         }
       >
-
         <AppKitButton
           connectStyle={styles.appKitButton}
           label='Iniciar sesión con billetera'
