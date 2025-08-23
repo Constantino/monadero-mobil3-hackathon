@@ -14,7 +14,11 @@ import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isRecargarModalVisible, setIsRecargarModalVisible] = useState(false);
   const [inputCode, setInputCode] = useState('');
+  const [inputAmount, setInputAmount] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState('MON');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [saldo, setSaldo] = useState(1000);
   const { walletInfo } = useWalletInfo();
   const { address, status } = useAccount();
@@ -64,6 +68,10 @@ export default function HomeScreen() {
   };
 
   const handleRecargarSaldo = () => {
+    setIsRecargarModalVisible(true);
+  };
+
+  const handleCanjearTarjeta = () => {
     setIsModalVisible(true);
   };
 
@@ -83,6 +91,11 @@ export default function HomeScreen() {
   const handleCancelModal = () => {
     setInputCode('');
     setIsModalVisible(false);
+  };
+
+  const handleCancelRecargarModal = () => {
+    setInputCode('');
+    setIsRecargarModalVisible(false);
   };
 
   return (
@@ -116,7 +129,7 @@ export default function HomeScreen() {
         </Pressable>
         <Pressable
           style={styles.button}
-          onPress={handleRecargarSaldo}
+          onPress={handleCanjearTarjeta}
         >
           <MaterialIcons name="swap-horiz" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>Canjear Tarjeta de Regalo</ThemedText>
@@ -130,7 +143,7 @@ export default function HomeScreen() {
         </Pressable>
       </ParallaxScrollView>
 
-      {/* Modal for code input */}
+      {/* Modal for gift card redemption */}
       <Modal
         visible={isModalVisible}
         transparent={true}
@@ -158,6 +171,91 @@ export default function HomeScreen() {
 
               <Pressable style={styles.modalSubmitButton} onPress={handleSubmitCode}>
                 <ThemedText style={styles.modalButtonText}>Canjear</ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal for balance recharge */}
+      <Modal
+        visible={isRecargarModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCancelRecargarModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ThemedText style={styles.modalTitle}>Recargar Saldo</ThemedText>
+            <ThemedText style={styles.modalSubtitle}>Selecciona la moneda y monto</ThemedText>
+
+            <View style={styles.dropdownContainer}>
+              <ThemedText style={styles.dropdownLabel}>Pagar con:</ThemedText>
+              <Pressable
+                style={styles.dropdown}
+                onPress={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <ThemedText style={styles.dropdownText}>{selectedCurrency}</ThemedText>
+                <MaterialIcons
+                  name={isDropdownOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+                  size={24}
+                  color="#666"
+                />
+              </Pressable>
+
+              <ThemedText style={styles.dropdownLabel}>Cripto disponible: {formatBalance(balance?.value || 0)} MON</ThemedText>
+
+              {isDropdownOpen && (
+                <View style={styles.dropdownOptions}>
+                  {['MON', 'USDC'].map((currency) => (
+                    <Pressable
+                      key={currency}
+                      style={[
+                        styles.dropdownOption,
+                        selectedCurrency === currency && styles.dropdownOptionSelected
+                      ]}
+                      onPress={() => {
+                        setSelectedCurrency(currency);
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      <ThemedText style={[
+                        styles.dropdownOptionText,
+                        selectedCurrency === currency && styles.dropdownOptionTextSelected
+                      ]}>
+                        {currency}
+                      </ThemedText>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            <TextInput
+              style={styles.codeInput}
+              placeholder="Saldo a recargar"
+              placeholderTextColor="#999"
+              value={inputAmount}
+              onChangeText={(text) => {
+                // Only allow numbers and decimal point
+                const numericText = text.replace(/[^0-9.]/g, '');
+                // Prevent multiple decimal points
+                const parts = numericText.split('.');
+                if (parts.length <= 2) {
+                  setInputAmount(numericText);
+                }
+              }}
+              keyboardType="numeric"
+              autoFocus={true}
+            />
+
+            <View style={styles.modalButtonContainer}>
+              <Pressable style={styles.modalCancelButton} onPress={handleCancelRecargarModal}>
+                <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
+              </Pressable>
+
+              <Pressable style={styles.modalSubmitButton} onPress={handleSubmitCode}>
+                <ThemedText style={styles.modalButtonText}>Recargar</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -271,6 +369,67 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  dropdownContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  dropdownLabel: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 8,
+    textAlign: 'left',
+    alignSelf: 'flex-start',
+  },
+  dropdown: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    backgroundColor: '#f9f9f9',
+  },
+  dropdownText: {
+    fontSize: 18,
+    color: '#333',
+    fontWeight: '500',
+  },
+  dropdownOptions: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginTop: 2,
+    zIndex: 1000,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  dropdownOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  dropdownOptionSelected: {
+    backgroundColor: '#9D4EDD',
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  dropdownOptionTextSelected: {
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
