@@ -12,8 +12,8 @@ export default function MapScreen() {
 
     // Mexico City coordinates
     const mexicoCityRegion = {
-        latitude: 19.4326,
-        longitude: -99.1332,
+        latitude: 19.4205,
+        longitude: -99.1867,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     };
