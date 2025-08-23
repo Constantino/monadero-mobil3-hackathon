@@ -14,7 +14,7 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.title}>Terminal de transferencias</ThemedText>
+      <ThemedText style={styles.title}>Terminal de pagos</ThemedText>
 
       <View style={styles.buttonRow}>
         <Pressable style={styles.button} onPress={() => router.push('/send-funds' as any)}>

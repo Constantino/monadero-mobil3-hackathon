@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function PaymentReceiverConfirmationScreen() {
+    const navigation = useNavigation();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: 'Confirmación',
+        });
+    }, [navigation]);
+
     return (
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title}>Pago confirmado</ThemedText>
