@@ -139,12 +139,12 @@ export default function HomeScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <ThemedText style={styles.modalTitle}>Recargar Saldo</ThemedText>
-            <ThemedText style={styles.modalSubtitle}>Ingresa el código de recarga</ThemedText>
+            <ThemedText style={styles.modalTitle}>Canjear Tarjeta de Regalo</ThemedText>
+            <ThemedText style={styles.modalSubtitle}>Ingresa el código de tarjeta</ThemedText>
 
             <TextInput
               style={styles.codeInput}
-              placeholder="Código de recarga"
+              placeholder="Código de tarjeta"
               placeholderTextColor="#999"
               value={inputCode}
               onChangeText={setInputCode}
@@ -157,7 +157,7 @@ export default function HomeScreen() {
               </Pressable>
 
               <Pressable style={styles.modalSubmitButton} onPress={handleSubmitCode}>
-                <ThemedText style={styles.modalButtonText}>Recargar</ThemedText>
+                <ThemedText style={styles.modalButtonText}>Canjear</ThemedText>
               </Pressable>
             </View>
           </View>
