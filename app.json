@@ -13,7 +13,8 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to show your position on the map."
-      }
+      },
+      "bundleIdentifier": "com.constantinom.monadero"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,8 +24,13 @@
       "edgeToEdgeEnabled": true,
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
-      ]
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.constantinom.monadero"
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +42,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/monadero-splash-icon.png",
+          "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -57,6 +63,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4e5aab2a-13c0-432b-80a8-8ffbfee841b8"
+      }
+    },
+    "owner": "constantino-m"
   }
 }
