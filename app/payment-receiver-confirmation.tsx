@@ -41,7 +41,13 @@ export default function PaymentReceiverConfirmationScreen() {
             Alert.alert(
                 'Ticket de Pago',
                 `Ticket generado para:\n\nMonto: ${paymentData.amount} ${paymentData.token || 'MSALDO'}\nCuenta: ${paymentData.billAccount}\nComercio: ${paymentData.merchant}\nTxID: ${latestTxId}\n\nTicket enviado a impresora.`,
-                [{ text: 'OK' }]
+                [{
+                    text: 'OK',
+                    onPress: () => {
+                        // Navigate to home/index screen
+                        router.push('/(tabs)');
+                    }
+                }]
             );
         } else {
             Alert.alert('Error', 'No hay datos de pago para imprimir');
@@ -49,7 +55,15 @@ export default function PaymentReceiverConfirmationScreen() {
     };
 
     const handleNoPrint = () => {
-        Alert.alert('Confirmado', 'Ticket no será impreso');
+        Alert.alert('Confirmado', 'Ticket no será impreso', [
+            {
+                text: 'OK',
+                onPress: () => {
+                    // Navigate to home/index screen
+                    router.push('/(tabs)');
+                }
+            }
+        ]);
     };
 
     return (

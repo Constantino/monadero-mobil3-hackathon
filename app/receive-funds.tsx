@@ -83,7 +83,7 @@ export default function ReceiveFundsScreen() {
 
     return (
         <ThemedView style={styles.container}>
-            <ScrollView 
+            <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.container}
                 showsVerticalScrollIndicator={true}
