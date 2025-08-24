@@ -3,16 +3,8 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXApplication (6.1.5):
     - ExpoModulesCore
-  - EXBarCodeScanner (13.0.1):
-    - EXImageLoader
-    - ExpoModulesCore
-    - ZXingObjC/OneD
-    - ZXingObjC/PDF417
   - EXConstants (17.1.7):
     - ExpoModulesCore
-  - EXImageLoader (4.7.0):
-    - ExpoModulesCore
-    - React-Core
   - Expo (53.0.22):
     - DoubleConversion
     - ExpoModulesCore
@@ -2197,7 +2189,6 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
-  - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
   - ExpoBlur (from `../node_modules/expo-blur/ios`)
@@ -2316,12 +2307,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXApplication:
     :path: "../node_modules/expo-application/ios"
-  EXBarCodeScanner:
-    :path: "../node_modules/expo-barcode-scanner/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
-  EXImageLoader:
-    :path: "../node_modules/expo-image-loader/ios"
   Expo:
     :path: "../node_modules/expo"
   ExpoAsset:
@@ -2520,9 +2507,7 @@ SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXApplication: 50cc8ea58c138da6e3f25cd789634219c86b90d5
-  EXBarCodeScanner: e2dd9b42c1b522a2adc9202b1dfbc64cb34456d1
   EXConstants: 9d62a46a36eae6d28cb978efcbc68aef354d1704
-  EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   Expo: f715b0c058ac26efde6fb3b4f18ffdd8bd933605
   ExpoAsset: 7bdbbacf4e6752ae6e3cf70555cee076f6229e6e
   ExpoBlur: 846780b2c90f59e964b9a50385d4deb67174ebfb
