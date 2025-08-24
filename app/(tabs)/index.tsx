@@ -3,7 +3,8 @@ import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Modal, TextInput, View, Alert, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useContractRead } from "wagmi";
+import { erc20Abi } from 'viem';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -25,6 +26,14 @@ export default function HomeScreen() {
   const { data: balance } = useBalance({
     address: address,
     chainId: 10143,
+  });
+
+  // Read MSAL ERC-20 token balance
+  const { data: msalBalance } = useContractRead({
+    address: '0x269F8fe621F23798F174301ae647055De0F6d3b1',
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
   });
 
   // Function to format balance from 18 decimal places
@@ -128,7 +137,7 @@ export default function HomeScreen() {
         />
 
         <ThemedText type="title">Cripto: {formatBalance(balance?.value || 0)} MON</ThemedText>
-        <ThemedText type="title">Saldo: {formatSaldo(saldo)}</ThemedText>
+        <ThemedText type="title">mSALDO: {formatSaldo(parseFloat(formatBalance(msalBalance || 0)) || 0)}</ThemedText>
 
         <Pressable
           style={styles.button}
