@@ -232,23 +232,32 @@ export default function HomeScreen() {
 
               {isDropdownOpen && (
                 <View style={styles.dropdownOptions}>
-                  {['MON', 'USDC'].map((currency) => (
+                  {[
+                    { key: 'MON', label: 'MON', disabled: false },
+                    { key: 'USDC (Proximamente)', label: 'USDC (Proximamente)', disabled: true },
+                    { key: 'MXNB (Proximamente)', label: 'MXNB (Proximamente)', disabled: true }
+                  ].map((currency) => (
                     <Pressable
-                      key={currency}
+                      key={currency.key}
                       style={[
                         styles.dropdownOption,
-                        selectedCurrency === currency && styles.dropdownOptionSelected
+                        selectedCurrency === currency.key && styles.dropdownOptionSelected,
+                        currency.disabled && styles.dropdownOptionDisabled
                       ]}
                       onPress={() => {
-                        setSelectedCurrency(currency);
-                        setIsDropdownOpen(false);
+                        if (!currency.disabled) {
+                          setSelectedCurrency(currency.key);
+                          setIsDropdownOpen(false);
+                        }
                       }}
+                      disabled={currency.disabled}
                     >
                       <ThemedText style={[
                         styles.dropdownOptionText,
-                        selectedCurrency === currency && styles.dropdownOptionTextSelected
+                        selectedCurrency === currency.key && styles.dropdownOptionTextSelected,
+                        currency.disabled && styles.dropdownOptionTextDisabled
                       ]}>
-                        {currency}
+                        {currency.label}
                       </ThemedText>
                     </Pressable>
                   ))}
@@ -456,5 +465,13 @@ const styles = StyleSheet.create({
   dropdownOptionTextSelected: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  dropdownOptionDisabled: {
+    backgroundColor: '#f5f5f5',
+    opacity: 0.6,
+  },
+  dropdownOptionTextDisabled: {
+    color: '#999',
+    fontStyle: 'italic',
   },
 });
