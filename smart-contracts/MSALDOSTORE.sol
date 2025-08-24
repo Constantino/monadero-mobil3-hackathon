@@ -6,6 +6,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
  * @title MSALDOSTORE
@@ -79,7 +80,7 @@ contract MSALDOSTORE is Ownable, ReentrancyGuard, Pausable {
         require(msalAmount >= minPurchaseAmount, "Amount below minimum");
         require(msalAmount <= maxPurchaseAmount, "Amount above maximum");
 
-        uint256 requiredEth = msalAmount * msalPriceInEth;
+        uint256 requiredEth = Math.mulDiv(msalAmount, msalPriceInEth, 10 ** 18);
         require(msg.value >= requiredEth, "Insufficient ETH sent");
 
         // Check if contract has enough MSALDO tokens
