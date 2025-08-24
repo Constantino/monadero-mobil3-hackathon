@@ -136,30 +136,33 @@ export default function HomeScreen() {
           loadingLabel='Conectando...'
         />
 
-        <ThemedText type="title">Cripto: {formatBalance(balance?.value || 0)} MON</ThemedText>
-        <ThemedText type="title">mSALDO: {formatSaldo(parseFloat(formatBalance(msalBalance || 0)) || 0)}</ThemedText>
-
-        <Pressable
-          style={styles.button}
-          onPress={handleRecargarSaldo}
-        >
-          <MaterialIcons name="attach-money" size={24} color="#fff" />
-          <ThemedText style={styles.buttonText}>Recargar Saldo</ThemedText>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          onPress={handleCanjearTarjeta}
-        >
-          <MaterialIcons name="swap-horiz" size={24} color="#fff" />
-          <ThemedText style={styles.buttonText}>Canjear Tarjeta de Regalo</ThemedText>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          onPress={() => router.push('/map')}
-        >
-          <IconSymbol name="map.fill" size={24} color="#fff" />
-          <ThemedText style={styles.buttonText}>Negocios en la red</ThemedText>
-        </Pressable>
+        {status === 'connected' && (
+          <>
+            <ThemedText type="title">Cripto: {formatBalance(balance?.value || 0)} MON</ThemedText>
+            <ThemedText type="title">mSALDO: {formatSaldo(parseFloat(formatBalance(msalBalance || 0)) || 0)}</ThemedText>
+            <Pressable
+              style={styles.button}
+              onPress={handleRecargarSaldo}
+            >
+              <MaterialIcons name="attach-money" size={24} color="#fff" />
+              <ThemedText style={styles.buttonText}>Recargar Saldo</ThemedText>
+            </Pressable>
+            <Pressable
+              style={styles.button}
+              onPress={handleCanjearTarjeta}
+            >
+              <MaterialIcons name="swap-horiz" size={24} color="#fff" />
+              <ThemedText style={styles.buttonText}>Canjear Tarjeta de Regalo</ThemedText>
+            </Pressable>
+            <Pressable
+              style={styles.button}
+              onPress={() => router.push('/map')}
+            >
+              <IconSymbol name="map.fill" size={24} color="#fff" />
+              <ThemedText style={styles.buttonText}>Negocios en la red</ThemedText>
+            </Pressable>
+          </>
+        )}
       </ParallaxScrollView>
 
       {/* Modal for gift card redemption */}
