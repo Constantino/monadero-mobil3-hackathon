@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { View, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Alert, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { router, useNavigation, useLocalSearchParams } from 'expo-router';
@@ -54,76 +54,81 @@ export default function PaymentReceiverConfirmationScreen() {
 
     return (
         <ThemedView style={styles.container}>
-            <ThemedText style={styles.title}>Pago confirmado</ThemedText>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContentContainer}
+                showsVerticalScrollIndicator={true}
+            >
+                <ThemedText style={styles.title}>Pago confirmado</ThemedText>
 
-            <View style={styles.checkmarkContainer}>
-                <Ionicons name="checkmark-circle" size={120} color="#28a745" />
-            </View>
+                <View style={styles.checkmarkContainer}>
+                    <Ionicons name="checkmark-circle" size={120} color="#28a745" />
+                </View>
 
-            <View style={styles.contentContainer}>
-                <ThemedText style={styles.subtitle}>Detalles del cobro:</ThemedText>
+                <View style={styles.contentContainer}>
+                    <ThemedText style={styles.subtitle}>Detalles del cobro:</ThemedText>
 
-                <View style={styles.detailsContainer}>
-                    <View style={styles.detailRow}>
-                        <ThemedText style={styles.detailLabel}>Monto:</ThemedText>
-                        <ThemedText style={styles.detailValue}>
-                            {paymentData?.amount || '0.00'}
-                        </ThemedText>
-                    </View>
-
-                    <View style={styles.detailRow}>
-                        <ThemedText style={styles.detailLabel}># Cuenta:</ThemedText>
-                        <ThemedText style={styles.detailValue}>{paymentData?.billAccount || 'N/A'}</ThemedText>
-                    </View>
-
-                    <View style={styles.detailRow}>
-                        <ThemedText style={styles.detailLabel}>Comercio:</ThemedText>
-                        <ThemedText style={styles.detailValue}>{paymentData?.merchant || 'N/A'}</ThemedText>
-                    </View>
-
-                    <View style={styles.detailRow}>
-                        <ThemedText style={styles.detailLabel}>Dirección:</ThemedText>
-                        <ThemedText style={styles.detailValue}>
-                            {paymentData?.address ?
-                                `${paymentData.address.slice(0, 6)}...${paymentData.address.slice(-4)}` :
-                                'N/A'
-                            }
-                        </ThemedText>
-                    </View>
-
-                    <View style={styles.detailRow}>
-                        <ThemedText style={styles.detailLabel}>TxID:</ThemedText>
-                        <View style={styles.txIdContainer}>
+                    <View style={styles.detailsContainer}>
+                        <View style={styles.detailRow}>
+                            <ThemedText style={styles.detailLabel}>Monto:</ThemedText>
                             <ThemedText style={styles.detailValue}>
-                                {latestTxId.startsWith('0x') && latestTxId.length > 20
-                                    ? `${latestTxId.slice(0, 10)}...${latestTxId.slice(-8)}`
-                                    : latestTxId
+                                {paymentData?.amount || '0.00'}
+                            </ThemedText>
+                        </View>
+
+                        <View style={styles.detailRow}>
+                            <ThemedText style={styles.detailLabel}># Cuenta:</ThemedText>
+                            <ThemedText style={styles.detailValue}>{paymentData?.billAccount || 'N/A'}</ThemedText>
+                        </View>
+
+                        <View style={styles.detailRow}>
+                            <ThemedText style={styles.detailLabel}>Comercio:</ThemedText>
+                            <ThemedText style={styles.detailValue}>{paymentData?.merchant || 'N/A'}</ThemedText>
+                        </View>
+
+                        <View style={styles.detailRow}>
+                            <ThemedText style={styles.detailLabel}>Dirección:</ThemedText>
+                            <ThemedText style={styles.detailValue}>
+                                {paymentData?.address ?
+                                    `${paymentData.address.slice(0, 6)}...${paymentData.address.slice(-4)}` :
+                                    'N/A'
                                 }
                             </ThemedText>
-                            <Pressable
-                                style={styles.refreshButton}
-                                onPress={handleRefreshTransactionId}
-                                disabled={false}
-                            >
-                                <Ionicons name="refresh" size={16} color="#9D4EDD" />
-                            </Pressable>
+                        </View>
+
+                        <View style={styles.detailRow}>
+                            <ThemedText style={styles.detailLabel}>TxID:</ThemedText>
+                            <View style={styles.txIdContainer}>
+                                <ThemedText style={styles.detailValue}>
+                                    {latestTxId.startsWith('0x') && latestTxId.length > 20
+                                        ? `${latestTxId.slice(0, 10)}...${latestTxId.slice(-8)}`
+                                        : latestTxId
+                                    }
+                                </ThemedText>
+                                <Pressable
+                                    style={styles.refreshButton}
+                                    onPress={handleRefreshTransactionId}
+                                    disabled={false}
+                                >
+                                    <Ionicons name="refresh" size={16} color="#9D4EDD" />
+                                </Pressable>
+                            </View>
                         </View>
                     </View>
-
                 </View>
-            </View>
 
-            <ThemedText style={styles.subtitle}>¿Desea imprimir el ticket?</ThemedText>
+                <ThemedText style={styles.subtitle}>¿Desea imprimir el ticket?</ThemedText>
 
-            <View style={styles.buttonContainer}>
-                <Pressable style={styles.backButton} onPress={handleNoPrint}>
-                    <ThemedText style={styles.backButtonText}>No</ThemedText>
-                </Pressable>
+                <View style={styles.buttonContainer}>
+                    <Pressable style={styles.backButton} onPress={handleNoPrint}>
+                        <ThemedText style={styles.backButtonText}>No</ThemedText>
+                    </Pressable>
 
-                <Pressable style={styles.confirmButton} onPress={handlePrintTicket}>
-                    <ThemedText style={styles.confirmButtonText}>Si</ThemedText>
-                </Pressable>
-            </View>
+                    <Pressable style={styles.confirmButton} onPress={handlePrintTicket}>
+                        <ThemedText style={styles.confirmButtonText}>Si</ThemedText>
+                    </Pressable>
+                </View>
+            </ScrollView>
         </ThemedView>
     );
 }
@@ -134,7 +139,16 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         padding: 20,
-        paddingTop: 60,
+    },
+    scrollView: {
+        flex: 1,
+        width: '100%',
+    },
+    scrollContentContainer: {
+        width: '100%',
+        alignItems: 'center',
+        paddingTop: 40, // Add top padding for proper spacing
+        paddingBottom: 20, // Add padding at bottom for better scrolling
     },
     title: {
         fontSize: 28,
@@ -150,7 +164,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         width: '100%',
         alignItems: 'center',
-        marginBottom: 40,
+        paddingBottom: 20, // Add padding at bottom for better scrolling
     },
     subtitle: {
         fontSize: 20,
