@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, Alert } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -8,24 +8,29 @@ import { useRouter } from 'expo-router';
 
 export default function ManagementScreen() {
     const router = useRouter();
+    
+    const handleComingSoon = () => {
+        Alert.alert('Información', 'Próximamente...');
+    };
+    
     return (
         <View style={styles.container}>
             <ThemedText style={styles.title}>Administración</ThemedText>
 
             <View style={styles.buttonRow}>
-                <Pressable style={styles.button} onPress={() => router.push('/send-funds' as any)}>
+                <Pressable style={styles.button} onPress={handleComingSoon}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         <IconSymbol name="paperplane.fill" size={120} color="#fff" />
                         <ThemedText style={styles.buttonText}>Mis pagos</ThemedText>
                     </View>
                 </Pressable>
-                <Pressable style={styles.button} onPress={() => router.push('/receive-funds')}>
+                <Pressable style={styles.button} onPress={handleComingSoon}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         <IconSymbol name="tray.and.arrow.down.fill" size={120} color="#fff" />
                         <ThemedText style={styles.buttonText}>Mis ingresos</ThemedText>
                     </View>
                 </Pressable>
-                <Pressable style={styles.button} onPress={() => router.push('/receive-funds')}>
+                <Pressable style={styles.button} onPress={handleComingSoon}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         <IconSymbol name="arrow.down.circle.fill" size={120} color="#fff" />
                         <ThemedText style={styles.buttonText}>Retirar</ThemedText>
