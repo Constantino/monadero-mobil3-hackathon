@@ -21,7 +21,8 @@ import { View } from "react-native";
 const queryClient = new QueryClient();
 
 // 1. Get projectId at https://dashboard.reown.com
-const projectId = "b8e39dfb697ba26ac5a77a4b29b35604"; // This project ID will only work for Expo Go. Use your own project ID for production.
+// const projectId = "b8e39dfb697ba26ac5a77a4b29b35604"; // This project ID will only work for Expo Go. Use your own project ID for production.
+const projectId = "b46f6d242192d049868be2232fd264a8"; // This project ID will only work for Expo Go. Use your own project ID for production.
 
 // 2. Create config
 const metadata = {
