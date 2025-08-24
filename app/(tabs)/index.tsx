@@ -67,13 +67,13 @@ export default function HomeScreen() {
 
     // If integer part is empty, it means the number is less than 1
     if (!integerPart) {
-      const result = `0.${decimalPart.substring(0, 2)}`;
+      const result = `0.${decimalPart.substring(0, 4)}`;
       console.log('Less than 1 result:', result);
       return result;
     }
 
     // Combine with decimal point and limit to 6 decimal places
-    const result = `${integerPart}.${decimalPart.substring(0, 2)}`;
+    const result = `${integerPart}.${decimalPart.substring(0, 4)}`;
     console.log('Final result:', result);
 
     return result;
