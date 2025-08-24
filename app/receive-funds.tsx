@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, TextInput, Pressable, Alert, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import QRCode from 'react-native-qrcode-svg';
@@ -83,85 +83,96 @@ export default function ReceiveFundsScreen() {
 
     return (
         <ThemedView style={styles.container}>
-            {/* <ThemedText style={styles.title}>Cobrar</ThemedText> */}
-
-            <View style={styles.inputContainer}>
-                <ThemedText style={styles.label}>Monto</ThemedText>
-                <TextInput
-                    style={styles.input}
-                    value={amount}
-                    onChangeText={handleAmountChange}
-                    placeholder="$0.00"
-                    keyboardType="number-pad"
-                    placeholderTextColor="#999"
-                    autoFocus={false}
-                    returnKeyType="done"
-                    blurOnSubmit={true}
-                    onFocus={() => console.log('Amount input focused')}
-                />
-            </View>
-
-            <View style={styles.inputContainer}>
-                <ThemedText style={styles.label}># Cuenta</ThemedText>
-                <TextInput
-                    style={styles.input}
-                    value={billAccount}
-                    onChangeText={setBillAccount}
-                    placeholder="Ingrese número de cuenta"
-                    placeholderTextColor="#999"
-                    returnKeyType="done"
-                    blurOnSubmit={true}
-                    onFocus={() => console.log('Bill account input focused')}
-                />
-            </View>
-
-            {showQR && (
-                <View style={styles.qrContainer}>
-                    <QRCode
-                        value={qrData}
-                        size={200}
-                        color="black"
-                        backgroundColor="white"
-                    />
-                    <ThemedText style={styles.qrText}>Escanea para pagar</ThemedText>
-                    <ThemedText style={styles.qrAddress}>
-                        Dirección: {address?.slice(0, 6)}...{address?.slice(-4)}
-                    </ThemedText>
-                </View>
-            )}
-
-            <Pressable style={styles.button} onPress={handleGenerateQR}>
-                <ThemedText style={styles.buttonText}>Generar cobro</ThemedText>
-            </Pressable>
-
-            <Pressable
-                style={styles.nextButton}
-                onPress={() => {
-                    console.log('Next button pressed');
-                    // Extract numeric amount from formatted string
-                    const numericAmount = amount.replace(/[^0-9.]/g, '');
-                    router.push({
-                        pathname: './payment-receiver-confirmation',
-                        params: {
-                            amount: numericAmount,
-                            billAccount: billAccount
-                        }
-                    });
-                }}
+            <ScrollView 
+                style={styles.scrollView}
+                contentContainerStyle={styles.container}
+                showsVerticalScrollIndicator={true}
             >
-                <ThemedText style={styles.nextButtonText}>Validate</ThemedText>
-            </Pressable>
+                {/* <ThemedText style={styles.title}>Cobrar</ThemedText> */}
+
+                <View style={styles.inputContainer}>
+                    <ThemedText style={styles.label}>Monto</ThemedText>
+                    <TextInput
+                        style={styles.input}
+                        value={amount}
+                        onChangeText={handleAmountChange}
+                        placeholder="$0.00"
+                        keyboardType="number-pad"
+                        placeholderTextColor="#999"
+                        autoFocus={false}
+                        returnKeyType="done"
+                        blurOnSubmit={true}
+                        onFocus={() => console.log('Amount input focused')}
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <ThemedText style={styles.label}># Cuenta</ThemedText>
+                    <TextInput
+                        style={styles.input}
+                        value={billAccount}
+                        onChangeText={setBillAccount}
+                        placeholder="Ingrese número de cuenta"
+                        placeholderTextColor="#999"
+                        returnKeyType="done"
+                        blurOnSubmit={true}
+                        onFocus={() => console.log('Bill account input focused')}
+                    />
+                </View>
+
+                {showQR && (
+                    <View style={styles.qrContainer}>
+                        <QRCode
+                            value={qrData}
+                            size={200}
+                            color="black"
+                            backgroundColor="white"
+                        />
+                        <ThemedText style={styles.qrText}>Escanea para pagar</ThemedText>
+                        <ThemedText style={styles.qrAddress}>
+                            Dirección: {address?.slice(0, 6)}...{address?.slice(-4)}
+                        </ThemedText>
+                    </View>
+                )}
+
+                <Pressable style={styles.button} onPress={handleGenerateQR}>
+                    <ThemedText style={styles.buttonText}>Generar cobro</ThemedText>
+                </Pressable>
+
+                <Pressable
+                    style={styles.nextButton}
+                    onPress={() => {
+                        console.log('Next button pressed');
+                        // Extract numeric amount from formatted string
+                        const numericAmount = amount.replace(/[^0-9.]/g, '');
+                        router.push({
+                            pathname: './payment-receiver-confirmation',
+                            params: {
+                                amount: numericAmount,
+                                billAccount: billAccount
+                            }
+                        });
+                    }}
+                >
+                    <ThemedText style={styles.nextButtonText}>Validate</ThemedText>
+                </Pressable>
+            </ScrollView>
         </ThemedView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1, // Changed from flex: 1 for ScrollView
         justifyContent: 'flex-start',
         alignItems: 'center',
         padding: 20,
         paddingTop: 60,
+        paddingBottom: 40, // Add bottom padding for better scrolling
+    },
+    scrollView: {
+        flex: 1,
+        width: '100%',
     },
     title: {
         fontSize: 24,
