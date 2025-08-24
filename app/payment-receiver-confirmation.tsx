@@ -2,16 +2,21 @@ import React, { useLayoutEffect } from 'react';
 import { View, StyleSheet, Pressable, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { router, useNavigation } from 'expo-router';
+import { router, useNavigation, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function PaymentReceiverConfirmationScreen() {
     const navigation = useNavigation();
+    const params = useLocalSearchParams();
 
-    // Hardcoded data
+    // Get data from route parameters
+    const amount = params.amount as string || '50.00';
+    const billAccount = params.billAccount as string || '123456789';
+
+    // Hardcoded data with dynamic values from params
     const paymentData = {
-        amount: '50.00',
-        billAccount: '123456789',
+        amount: amount,
+        billAccount: billAccount,
         merchant: 'Tacos Don Chuy',
         address: '0x1234567890123456789012345678901234567890',
         token: 'MSALDO'

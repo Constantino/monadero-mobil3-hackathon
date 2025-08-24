@@ -138,7 +138,15 @@ export default function ReceiveFundsScreen() {
                 style={styles.nextButton}
                 onPress={() => {
                     console.log('Next button pressed');
-                    router.push('./payment-receiver-confirmation');
+                    // Extract numeric amount from formatted string
+                    const numericAmount = amount.replace(/[^0-9.]/g, '');
+                    router.push({
+                        pathname: './payment-receiver-confirmation',
+                        params: {
+                            amount: numericAmount,
+                            billAccount: billAccount
+                        }
+                    });
                 }}
             >
                 <ThemedText style={styles.nextButtonText}>Validate</ThemedText>
