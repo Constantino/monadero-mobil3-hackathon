@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable } from 'react-native';
+import { View, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import QRCode from 'react-native-qrcode-svg';
 import { router } from 'expo-router';
+import { useAccount, useBalance, useChainId, useContractRead } from "wagmi";
+import { erc20Abi } from 'viem';
 
 export default function ReceiveFundsScreen() {
     const [amount, setAmount] = useState('');
     const [billAccount, setBillAccount] = useState('');
     const [showQR, setShowQR] = useState(false);
     const [qrData, setQrData] = useState('');
+
+    // Get wallet information
+    const { address, status } = useAccount();
+    const chainId = useChainId();
+
+    // Read MSAL ERC-20 token balance
+    const { data: msalBalance } = useContractRead({
+        address: chainId === 10143 ? '0x269F8fe621F23798F174301ae647055De0F6d3b1' : '0x030a8AdAe6C49a6D01b83587f92308ac2A111cb6',
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: address ? [address] : undefined,
+    });
 
     const formatAmount = (text: string) => {
         // Remove all non-numeric characters except decimal point
@@ -33,19 +47,38 @@ export default function ReceiveFundsScreen() {
 
     const handleGenerateQR = () => {
         if (!amount || !billAccount) {
-            alert('Por favor complete todos los campos');
+            Alert.alert('Error', 'Por favor complete todos los campos');
+            return;
+        }
+
+        if (!address) {
+            Alert.alert('Error', 'Por favor conecta tu billetera primero');
+            return;
+        }
+
+        // Extract numeric amount from formatted string
+        const numericAmount = amount.replace(/[^0-9.]/g, '');
+        const msalAmount = parseFloat(numericAmount);
+
+        if (isNaN(msalAmount) || msalAmount <= 0) {
+            Alert.alert('Error', 'Por favor ingresa un monto válido');
             return;
         }
 
         const paymentData = {
-            address: '0x0001',
-            amount: amount,
+            address: address, // Real wallet address
+            amount: msalAmount, // MSALDO token amount
             billAccount: billAccount,
-            merchant: 'Tacos Don Chuy'
+            merchant: 'Tacos Don Chuy',
+            token: 'MSALDO',
+            chainId: chainId,
+            timestamp: new Date().toISOString()
         };
 
         setQrData(JSON.stringify(paymentData));
         setShowQR(true);
+
+        console.log('Generated QR for MSALDO payment:', paymentData);
     };
 
     return (
@@ -91,6 +124,9 @@ export default function ReceiveFundsScreen() {
                         backgroundColor="white"
                     />
                     <ThemedText style={styles.qrText}>Escanea para pagar</ThemedText>
+                    <ThemedText style={styles.qrAddress}>
+                        Dirección: {address?.slice(0, 6)}...{address?.slice(-4)}
+                    </ThemedText>
                 </View>
             )}
 
@@ -123,6 +159,27 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 40,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#555',
+        marginBottom: 20,
+    },
+    balanceContainer: {
+        width: '100%',
+        marginBottom: 24,
+        alignItems: 'center',
+    },
+    balanceLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
+        alignSelf: 'flex-start',
+    },
+    balanceAmount: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#9D4EDD',
     },
     inputContainer: {
         width: '100%',
@@ -174,6 +231,11 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 16,
         color: '#555',
+    },
+    qrAddress: {
+        marginTop: 10,
+        fontSize: 14,
+        color: '#777',
     },
     nextButton: {
         backgroundColor: '#9D4EDD',
