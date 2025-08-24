@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { router, useNavigation } from 'expo-router';
@@ -8,11 +8,44 @@ import { Ionicons } from '@expo/vector-icons';
 export default function PaymentReceiverConfirmationScreen() {
     const navigation = useNavigation();
 
+    // Hardcoded data
+    const paymentData = {
+        amount: '50.00',
+        billAccount: '123456789',
+        merchant: 'Tacos Don Chuy',
+        address: '0x1234567890123456789012345678901234567890',
+        token: 'MSALDO'
+    };
+
+    const latestTxId = '0xa1e5a8e3b7f7f3c54a326bbe66362ded013ac31ef47f57560a7933171f062c1f';
+
+    // Manual refresh function for transaction ID
+    const handleRefreshTransactionId = () => {
+        // No-op since we're using hardcoded data
+        console.log('PaymentReceiverConfirmation: Refresh requested (hardcoded data)');
+    };
+
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Confirmación',
         });
     }, [navigation]);
+
+    const handlePrintTicket = () => {
+        if (paymentData) {
+            Alert.alert(
+                'Ticket de Pago',
+                `Ticket generado para:\n\nMonto: ${paymentData.amount} ${paymentData.token || 'MSALDO'}\nCuenta: ${paymentData.billAccount}\nComercio: ${paymentData.merchant}\nTxID: ${latestTxId}\n\nTicket enviado a impresora.`,
+                [{ text: 'OK' }]
+            );
+        } else {
+            Alert.alert('Error', 'No hay datos de pago para imprimir');
+        }
+    };
+
+    const handleNoPrint = () => {
+        Alert.alert('Confirmado', 'Ticket no será impreso');
+    };
 
     return (
         <ThemedView style={styles.container}>
@@ -28,31 +61,61 @@ export default function PaymentReceiverConfirmationScreen() {
                 <View style={styles.detailsContainer}>
                     <View style={styles.detailRow}>
                         <ThemedText style={styles.detailLabel}>Monto:</ThemedText>
-                        <ThemedText style={styles.detailValue}>$0.00</ThemedText>
+                        <ThemedText style={styles.detailValue}>
+                            {paymentData?.amount || '0.00'}
+                        </ThemedText>
                     </View>
 
                     <View style={styles.detailRow}>
                         <ThemedText style={styles.detailLabel}># Cuenta:</ThemedText>
-                        <ThemedText style={styles.detailValue}>N/A</ThemedText>
+                        <ThemedText style={styles.detailValue}>{paymentData?.billAccount || 'N/A'}</ThemedText>
                     </View>
 
                     <View style={styles.detailRow}>
-                        <ThemedText style={styles.detailLabel}>Id:</ThemedText>
-                        <ThemedText style={styles.detailValue}>0x0000...000</ThemedText>
+                        <ThemedText style={styles.detailLabel}>Comercio:</ThemedText>
+                        <ThemedText style={styles.detailValue}>{paymentData?.merchant || 'N/A'}</ThemedText>
                     </View>
+
+                    <View style={styles.detailRow}>
+                        <ThemedText style={styles.detailLabel}>Dirección:</ThemedText>
+                        <ThemedText style={styles.detailValue}>
+                            {paymentData?.address ?
+                                `${paymentData.address.slice(0, 6)}...${paymentData.address.slice(-4)}` :
+                                'N/A'
+                            }
+                        </ThemedText>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                        <ThemedText style={styles.detailLabel}>TxID:</ThemedText>
+                        <View style={styles.txIdContainer}>
+                            <ThemedText style={styles.detailValue}>
+                                {latestTxId.startsWith('0x') && latestTxId.length > 20
+                                    ? `${latestTxId.slice(0, 10)}...${latestTxId.slice(-8)}`
+                                    : latestTxId
+                                }
+                            </ThemedText>
+                            <Pressable
+                                style={styles.refreshButton}
+                                onPress={handleRefreshTransactionId}
+                                disabled={false}
+                            >
+                                <Ionicons name="refresh" size={16} color="#9D4EDD" />
+                            </Pressable>
+                        </View>
+                    </View>
+
                 </View>
             </View>
 
             <ThemedText style={styles.subtitle}>¿Desea imprimir el ticket?</ThemedText>
 
             <View style={styles.buttonContainer}>
-                <Pressable style={styles.backButton} onPress={() => alert('No')}>
+                <Pressable style={styles.backButton} onPress={handleNoPrint}>
                     <ThemedText style={styles.backButtonText}>No</ThemedText>
                 </Pressable>
 
-                <Pressable style={styles.confirmButton} onPress={() => {
-                    alert('Si')
-                }}>
+                <Pressable style={styles.confirmButton} onPress={handlePrintTicket}>
                     <ThemedText style={styles.confirmButtonText}>Si</ThemedText>
                 </Pressable>
             </View>
@@ -151,5 +214,25 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 18,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 18,
+        color: '#555',
+    },
+    txIdContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+    refreshButton: {
+        padding: 5,
     },
 });

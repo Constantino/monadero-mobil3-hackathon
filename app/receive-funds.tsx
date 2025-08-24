@@ -141,7 +141,7 @@ export default function ReceiveFundsScreen() {
                     router.push('./payment-receiver-confirmation');
                 }}
             >
-                <ThemedText style={styles.nextButtonText}>Next</ThemedText>
+                <ThemedText style={styles.nextButtonText}>Validate</ThemedText>
             </Pressable>
         </ThemedView>
     );
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 16,
         height: 50,
-        width: 70,
+        width: 100,
         textAlign: 'center',
         alignSelf: 'center',
         justifyContent: 'center',

@@ -5,6 +5,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useAccount, useContractRead, useContractWrite, useChainId } from "wagmi";
 import { erc20Abi } from 'viem';
 import { parseEther, formatEther } from 'viem';
+import { router } from 'expo-router';
 
 export default function SendFundsScreen() {
     const [permission, requestPermission] = useCameraPermissions();
@@ -287,6 +288,29 @@ export default function SendFundsScreen() {
                             {isProcessing || isTransferring ? 'Procesando...' : 'Autorizar'}
                         </ThemedText>
                     </Pressable>
+                    <Pressable
+                        style={styles.nextButton}
+                        onPress={() => {
+                            console.log('Next button pressed');
+                            // Pass payment data to the confirmation screen
+                            if (scannedData) {
+                                try {
+                                    const parsedData = JSON.parse(scannedData);
+                                    router.push({
+                                        pathname: './payment-receiver-confirmation',
+                                        params: { paymentData: scannedData }
+                                    });
+                                } catch (error) {
+                                    console.error('Error parsing payment data:', error);
+                                    router.push('./payment-receiver-confirmation');
+                                }
+                            } else {
+                                router.push('./payment-receiver-confirmation');
+                            }
+                        }}
+                    >
+                        <ThemedText style={styles.nextButtonText}>Next</ThemedText>
+                    </Pressable>
                 </View>
             )}
 
@@ -417,5 +441,21 @@ const styles = StyleSheet.create({
         fontSize: 34,
         fontWeight: 'bold',
         color: '#9D4EDD',
+    },
+    nextButton: {
+        backgroundColor: '#4CAF50',
+        paddingVertical: 10,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        marginTop: 14,
+        height: 100,
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nextButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 24,
     },
 });
