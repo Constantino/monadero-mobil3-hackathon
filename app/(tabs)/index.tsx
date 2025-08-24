@@ -1,10 +1,11 @@
 import { AppKitButton, useWalletInfo } from '@reown/appkit-wagmi-react-native';
 import { Image } from 'expo-image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Pressable, StyleSheet, Modal, TextInput, View, Alert, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useAccount, useBalance, useContractRead, useChainId } from "wagmi";
+import { useAccount, useBalance, useContractRead, useChainId, useContractWrite } from "wagmi";
 import { erc20Abi } from 'viem';
+import { parseEther, formatEther } from 'viem';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -12,6 +13,23 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { router } from 'expo-router';
+
+// MSALDOSTORE contract ABI
+const MSALDOSTORE_ABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "msalAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyMsalTokens",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+] as const;
 
 // chainId: 10143,
 
@@ -23,21 +41,41 @@ export default function HomeScreen() {
   const [selectedCurrency, setSelectedCurrency] = useState('MON');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [saldo, setSaldo] = useState(1000);
+  const [isLoading, setIsLoading] = useState(false);
   const { walletInfo } = useWalletInfo();
   const { address, status } = useAccount();
   const chainId = useChainId();
-  const { data: balance } = useBalance({
+  const { data: balance, refetch: refetchBalance } = useBalance({
     address: address,
     chainId: chainId,
   });
 
+  // MSALDOSTORE contract address
+  const MSALDOSTORE_ADDRESS = '0xA2AEbB83AE24994760fb32419cF952F2a1e7Bc71';
+
   // Read MSAL ERC-20 token balance
-  const { data: msalBalance } = useContractRead({
+  const { data: msalBalance, refetch: refetchMsalBalance } = useContractRead({
     address: chainId === 10143 ? '0x269F8fe621F23798F174301ae647055De0F6d3b1' : '0x030a8AdAe6C49a6D01b83587f92308ac2A111cb6',
     abi: erc20Abi,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
   });
+
+  // Contract write for buying MSAL tokens
+  const { writeContract: buyMsalTokens, isPending: isBuying } = useContractWrite();
+
+  // Reload balances after transaction completion
+  useEffect(() => {
+    if (!isBuying && !isLoading) {
+      // Small delay to ensure the transaction is processed on the blockchain
+      const timer = setTimeout(() => {
+        refetchBalance();
+        refetchMsalBalance();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isBuying, isLoading, refetchBalance, refetchMsalBalance]);
 
   // Function to format balance from 18 decimal places
   const formatBalance = (balanceValue: string | number | bigint) => {
@@ -89,6 +127,57 @@ export default function HomeScreen() {
     }).format(amount);
   };
 
+  // Function to calculate ETH cost for MSAL tokens
+  const calculateEthCost = (msalAmount: number) => {
+    // 1 MSAL = 0.0001 ETH
+    const MSAL_PRICE_IN_ETH = 0.0001;
+    return msalAmount * MSAL_PRICE_IN_ETH;
+  };
+
+  // Function to handle MSAL token purchase
+  const handleBuyMsalTokens = async () => {
+    if (!inputAmount || parseFloat(inputAmount) <= 0) {
+      Alert.alert('Error', 'Por favor ingresa un monto válido');
+      return;
+    }
+
+    if (!buyMsalTokens) {
+      Alert.alert('Error', 'Contrato no disponible');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const msalAmount = parseFloat(inputAmount);
+      const ethCost = calculateEthCost(msalAmount);
+
+      console.log(`Buying ${msalAmount} MSAL tokens for ${ethCost} ETH`);
+
+      // Convert ETH amount to WEI
+      const ethCostInWei = parseEther(ethCost.toString());
+
+      // Call the contract with the MSAL amount and ETH value
+      buyMsalTokens({
+        address: MSALDOSTORE_ADDRESS,
+        abi: MSALDOSTORE_ABI,
+        functionName: 'buyMsalTokens',
+        args: [parseEther(msalAmount.toString())],
+        value: ethCostInWei,
+      });
+
+      // Reset form
+      setInputAmount('');
+      setIsRecargarModalVisible(false);
+
+    } catch (error) {
+      console.error('Error buying MSAL tokens:', error);
+      Alert.alert('Error', 'Error al comprar tokens MSAL');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleRecargarSaldo = () => {
     setIsRecargarModalVisible(true);
   };
@@ -97,17 +186,44 @@ export default function HomeScreen() {
     setIsModalVisible(true);
   };
 
-  const handleSubmitCode = () => {
+  const handleSubmitCode = async () => {
     if (inputCode.trim() === '') {
       Alert.alert('Error', 'Por favor ingresa un código');
       return;
     }
 
-    // Increment saldo by 100 units
-    setSaldo(prevSaldo => prevSaldo + 100);
-    setInputCode('');
-    setIsModalVisible(false);
-    Alert.alert('Éxito', 'Saldo recargado exitosamente');
+    try {
+      setIsLoading(true);
+
+      // Buy 100 MSAL tokens
+      const msalAmount = 100;
+      const ethCost = calculateEthCost(msalAmount);
+
+      console.log(`Gift card redemption: Buying ${msalAmount} MSAL tokens for ${ethCost} ETH`);
+
+      // Convert ETH amount to WEI
+      const ethCostInWei = parseEther(ethCost.toString());
+
+      // Call the contract to buy MSAL tokens
+      buyMsalTokens({
+        address: MSALDOSTORE_ADDRESS,
+        abi: MSALDOSTORE_ABI,
+        functionName: 'buyMsalTokens',
+        args: [parseEther(msalAmount.toString())],
+        value: ethCostInWei,
+      });
+
+      // Reset form
+      setInputCode('');
+      setIsModalVisible(false);
+      Alert.alert('Éxito', 'Tarjeta canjeada exitosamente. Comprando 100 MSAL tokens...');
+
+    } catch (error) {
+      console.error('Error redeeming gift card:', error);
+      Alert.alert('Error', 'Error al canjear la tarjeta de regalo');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancelModal = () => {
@@ -116,7 +232,7 @@ export default function HomeScreen() {
   };
 
   const handleCancelRecargarModal = () => {
-    setInputCode('');
+    setInputAmount('');
     setIsRecargarModalVisible(false);
   };
 
@@ -142,7 +258,20 @@ export default function HomeScreen() {
         {status === 'connected' && (
           <>
             <ThemedText type="title">Cripto: {formatBalance(balance?.value || 0)} MON</ThemedText>
-            <ThemedText type="title">mSALDO: {formatSaldo(parseFloat(formatBalance(msalBalance || 0)) || 0)}</ThemedText>
+            <ThemedText type="title">SALDO: {formatSaldo(parseFloat(formatBalance(msalBalance || 0)) || 0)}</ThemedText>
+
+            <Pressable
+              style={styles.refreshButton}
+              onPress={() => {
+                Alert.alert('Refrescar', 'Actualizando balances...');
+                refetchBalance();
+                refetchMsalBalance();
+              }}
+            >
+              <MaterialIcons name="refresh" size={16} color="#fff" />
+              <ThemedText style={styles.refreshButtonText}>Refrescar balances</ThemedText>
+            </Pressable>
+
             <Pressable
               style={styles.button}
               onPress={handleRecargarSaldo}
@@ -283,13 +412,30 @@ export default function HomeScreen() {
               autoFocus={true}
             />
 
+            {inputAmount && parseFloat(inputAmount) > 0 && (
+              <View style={styles.ethCostContainer}>
+                <ThemedText style={styles.ethCostText}>
+                  Costo en MON: {calculateEthCost(parseFloat(inputAmount)).toFixed(6)} MON
+                </ThemedText>
+                <ThemedText style={styles.ethCostText}>
+                  (1 MSAL = 0.0001 MON)
+                </ThemedText>
+              </View>
+            )}
+
             <View style={styles.modalButtonContainer}>
               <Pressable style={styles.modalCancelButton} onPress={handleCancelRecargarModal}>
                 <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
               </Pressable>
 
-              <Pressable style={styles.modalSubmitButton} onPress={handleSubmitCode}>
-                <ThemedText style={styles.modalButtonText}>Recargar</ThemedText>
+              <Pressable
+                style={[styles.modalSubmitButton, (isLoading || isBuying) && styles.modalSubmitButtonDisabled]}
+                onPress={handleBuyMsalTokens}
+                disabled={isLoading || isBuying}
+              >
+                <ThemedText style={styles.modalButtonText}>
+                  {isLoading || isBuying ? 'Procesando...' : 'Recargar'}
+                </ThemedText>
               </Pressable>
             </View>
           </View>
@@ -400,6 +546,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
   },
+  modalSubmitButtonDisabled: {
+    backgroundColor: '#ccc',
+    opacity: 0.6,
+  },
   modalButtonText: {
     color: '#fff',
     fontSize: 18,
@@ -473,5 +623,36 @@ const styles = StyleSheet.create({
   dropdownOptionTextDisabled: {
     color: '#999',
     fontStyle: 'italic',
+  },
+  ethCostContainer: {
+    width: '100%',
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#f0f8ff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#87ceeb',
+  },
+  ethCostText: {
+    fontSize: 14,
+    color: '#0066cc',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  refreshButton: {
+    backgroundColor: '#4CAF50', // A green color for refreshing
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+  },
+  refreshButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

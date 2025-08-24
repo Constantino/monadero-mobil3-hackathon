@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Dimensions, Alert } from 'react-native';
+import { StyleSheet, View, Dimensions, Alert, Platform, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
@@ -9,6 +9,9 @@ import { ThemedView } from '@/components/ThemedView';
 export default function MapScreen() {
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [mapError, setMapError] = useState<string | null>(null);
+    const [mapReady, setMapReady] = useState(false);
 
     // Mexico City coordinates
     const mexicoCityRegion = {
@@ -185,22 +188,119 @@ export default function MapScreen() {
     ];
 
     useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                Alert.alert(
-                    'Location Permission Required',
-                    'This app needs location access to show your position on the map.',
-                    [{ text: 'OK' }]
-                );
-                return;
-            }
+        console.log('MapScreen: useEffect started');
 
-            let currentLocation = await Location.getCurrentPositionAsync({});
-            setLocation(currentLocation);
+        // Add a timeout to detect if map is taking too long
+        const mapTimeout = setTimeout(() => {
+            if (isLoading) {
+                console.log('MapScreen: Map loading timeout - showing fallback');
+                setMapError('Map is taking too long to load. Showing locations list instead.');
+                setIsLoading(false);
+            }
+        }, 10000); // 10 seconds timeout
+
+        (async () => {
+            try {
+                setIsLoading(true);
+                setErrorMsg(null);
+                setMapError(null);
+
+                console.log('MapScreen: Requesting location permissions...');
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                console.log('MapScreen: Location permission status:', status);
+
+                if (status !== 'granted') {
+                    setErrorMsg('Permission to access location was denied');
+                    Alert.alert(
+                        'Location Permission Required',
+                        'This app needs location access to show your position on the map.',
+                        [{ text: 'OK' }]
+                    );
+                    setIsLoading(false);
+                    return;
+                }
+
+                console.log('MapScreen: Getting current location...');
+                let currentLocation = await Location.getCurrentPositionAsync({
+                    accuracy: Location.Accuracy.Balanced,
+                    timeInterval: 5000,
+                    distanceInterval: 10,
+                });
+                console.log('MapScreen: Location obtained:', currentLocation);
+                setLocation(currentLocation);
+            } catch (error) {
+                console.error('MapScreen: Location error:', error);
+                setErrorMsg('Error getting location');
+            } finally {
+                setIsLoading(false);
+            }
         })();
+
+        return () => clearTimeout(mapTimeout);
     }, []);
+
+    const handleMapReady = () => {
+        console.log('MapScreen: Map is ready');
+        setMapReady(true);
+        setIsLoading(false);
+    };
+
+    const handleMapError = (error: any) => {
+        console.error('MapScreen: Map error:', error);
+        setMapError('Error loading map. Please check your internet connection and try again.');
+        setIsLoading(false);
+    };
+
+    console.log('MapScreen: Render state - isLoading:', isLoading, 'mapReady:', mapReady, 'mapError:', mapError);
+
+    if (isLoading) {
+        return (
+            <ThemedView style={styles.container}>
+                <View style={styles.header}>
+                    <ThemedText type="title">Negocios afiliados</ThemedText>
+                </View>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#9D4EDD" />
+                    <ThemedText style={styles.loadingText}>Cargando mapa...</ThemedText>
+                    <ThemedText style={styles.loadingSubtext}>Esperando permisos de ubicación...</ThemedText>
+                </View>
+            </ThemedView>
+        );
+    }
+
+    if (mapError) {
+        return (
+            <ThemedView style={styles.container}>
+                <View style={styles.header}>
+                    <ThemedText type="title">Negocios afiliados</ThemedText>
+                </View>
+                <View style={styles.errorContainer}>
+                    <ThemedText style={styles.errorText}>{mapError}</ThemedText>
+                    <ThemedText style={styles.errorSubtext}>
+                        {Platform.OS === 'android'
+                            ? 'Make sure you have a valid Google Maps API key configured.'
+                            : 'Please check your internet connection.'
+                        }
+                    </ThemedText>
+
+                    {/* Fallback: Show locations as a list */}
+                    <View style={styles.fallbackContainer}>
+                        <ThemedText style={styles.fallbackTitle}>Negocios disponibles:</ThemedText>
+                        {locations.map((location) => (
+                            <View key={location.id} style={styles.locationItem}>
+                                <ThemedText style={styles.locationTitle}>{location.title}</ThemedText>
+                                <ThemedText style={styles.locationDescription}>{location.description}</ThemedText>
+                                <ThemedText style={styles.locationCoords}>
+                                    Lat: {location.coordinate.latitude.toFixed(4)},
+                                    Lng: {location.coordinate.longitude.toFixed(4)}
+                                </ThemedText>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            </ThemedView>
+        );
+    }
 
     return (
         <ThemedView style={styles.container}>
@@ -208,11 +308,27 @@ export default function MapScreen() {
                 <ThemedText type="title">Negocios afiliados</ThemedText>
             </View>
 
+            {/* Debug info */}
+            <View style={styles.debugInfo}>
+                <ThemedText style={styles.debugText}>
+                    Platform: {Platform.OS} | Map Ready: {mapReady ? 'Yes' : 'No'} | Loading: {isLoading ? 'Yes' : 'No'}
+                </ThemedText>
+            </View>
+
             <MapView
                 style={styles.map}
                 initialRegion={mexicoCityRegion}
                 showsUserLocation={true}
                 showsMyLocationButton={true}
+                onMapReady={handleMapReady}
+                loadingEnabled={true}
+                loadingIndicatorColor="#9D4EDD"
+                loadingBackgroundColor="#ffffff"
+                mapType="standard"
+                zoomEnabled={true}
+                scrollEnabled={true}
+                rotateEnabled={true}
+                pitchEnabled={true}
             >
                 {locations.map((location) => (
                     <Marker
@@ -224,6 +340,13 @@ export default function MapScreen() {
                     />
                 ))}
             </MapView>
+
+            {!mapReady && (
+                <View style={styles.mapOverlay}>
+                    <ActivityIndicator size="large" color="#9D4EDD" />
+                    <ThemedText style={styles.mapOverlayText}>Inicializando mapa...</ThemedText>
+                </View>
+            )}
         </ThemedView>
     );
 }
@@ -242,5 +365,96 @@ const styles = StyleSheet.create({
         flex: 1,
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    loadingText: {
+        marginTop: 20,
+        fontSize: 18,
+        color: '#666',
+    },
+    loadingSubtext: {
+        marginTop: 10,
+        fontSize: 14,
+        color: '#999',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 20,
+    },
+    errorText: {
+        fontSize: 18,
+        color: '#ff0000',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    errorSubtext: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+    },
+    mapOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    mapOverlayText: {
+        marginTop: 20,
+        fontSize: 16,
+        color: '#666',
+    },
+    debugInfo: {
+        position: 'absolute',
+        top: 100, // Adjust as needed to be above the map
+        left: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        padding: 10,
+        borderRadius: 5,
+    },
+    debugText: {
+        fontSize: 14,
+        color: '#333',
+    },
+    fallbackContainer: {
+        marginTop: 20,
+        width: '100%',
+    },
+    fallbackTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    locationItem: {
+        backgroundColor: '#f0f0f0',
+        padding: 10,
+        marginBottom: 5,
+        borderRadius: 5,
+    },
+    locationTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 2,
+    },
+    locationDescription: {
+        fontSize: 14,
+        color: '#555',
+        marginBottom: 2,
+    },
+    locationCoords: {
+        fontSize: 12,
+        color: '#888',
     },
 });
